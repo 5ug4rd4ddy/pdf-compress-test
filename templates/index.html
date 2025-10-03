@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>External System - PDF Compressor Demo</title>
+</head>
+<body>
+    <h1>Upload & Compress PDF</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="application/pdf" required>
+        <button type="submit">Compress</button>
+    </form>
+
+    <h2>Compressed Files</h2>
+    <ul>
+        {% for f in files %}
+            <li><a href="{{ url_for('compressed_file', filename=f) }}" target="_blank">{{ f }}</a></li>
+        {% else %}
+            <li>No files yet.</li>
+        {% endfor %}
+    </ul>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>
