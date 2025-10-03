@@ -10,12 +10,14 @@ Aplikasi demo untuk mengkompresi file PDF menggunakan service eksternal melalui 
 - Antarmuka web sederhana
 - Keamanan API dengan API key
 - Daftar file yang sudah dikompresi
+- Konfigurasi fleksibel melalui environment variables
 
 ## Persyaratan
 
 - Python 3.x
 - Flask
 - Requests
+- python-dotenv
 - Service kompresor PDF eksternal
 
 ## Instalasi
@@ -28,14 +30,27 @@ cd pdf-compress-test
 
 2. Install dependensi:
 ```bash
-pip install flask requests
+pip install flask requests python-dotenv
 ```
 
-3. Konfigurasi environment variables (opsional):
-```bash
-COMPRESSOR_API_KEY=your_api_key
-COMPRESS_SERVICE_URL=https://pdf.viscusmedia.com/compress
-```
+3. Konfigurasi environment:
+   - Copy `.env.example` ke `.env`
+   ```bash
+   cp .env.example .env
+   ```
+   - Sesuaikan nilai di file `.env` sesuai kebutuhan
+
+## Konfigurasi Environment
+
+Aplikasi menggunakan environment variables untuk konfigurasi. Berikut adalah daftar variabel yang tersedia:
+
+| Variabel | Deskripsi | Nilai Default |
+|----------|-----------|---------------|
+| COMPRESS_SERVICE_URL | URL service kompresi PDF | https://pdf.viscusmedia.com/compress |
+| CALLBACK_URL | URL callback untuk menerima hasil kompresi | http://127.0.0.1:5000/receive |
+| FILE_BASE_URL | Base URL untuk akses file | http://127.0.0.1:5000 |
+| COMPRESSOR_API_KEY | API key untuk autentikasi | secret123 |
+| FLASK_SECRET_KEY | Secret key untuk Flask session | development-key-123 |
 
 ## Penggunaan
 
@@ -58,7 +73,9 @@ pdf-demo/
 ├── templates/          # Template HTML
 │   └── index.html     # Halaman utama
 ├── uploads/           # Direktori untuk file yang diupload
-└── compressed/        # Direktori untuk file hasil kompresi
+├── compressed/        # Direktori untuk file hasil kompresi
+├── .env              # File konfigurasi environment (jangan commit)
+└── .env.example      # Template file konfigurasi environment
 ```
 
 ## API Endpoints
@@ -84,9 +101,11 @@ pdf-demo/
 - Validasi tipe file
 - Penggunaan UUID untuk nama file
 - Direktori upload dan compressed yang terpisah
+- Konfigurasi sensitif melalui environment variables
 
 ## Catatan
 
 - Aplikasi ini adalah demo dan memerlukan konfigurasi tambahan untuk production
 - File yang diupload harus dapat diakses oleh service kompresor
 - Dalam implementasi production, gunakan storage publik (seperti S3) untuk file
+- Pastikan untuk tidak meng-commit file `.env` ke repository

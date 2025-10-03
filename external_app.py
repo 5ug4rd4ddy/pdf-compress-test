@@ -2,21 +2,24 @@ import os
 import uuid
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory, flash
 import requests
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 UPLOAD_FOLDER = "uploads"
 COMPRESSED_FOLDER = "compressed"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(COMPRESSED_FOLDER, exist_ok=True)
 
-# API key yang dipakai service kompresor
-COMPRESSOR_API_KEY = "secret123"
-
-# URL service kompresor
-COMPRESS_SERVICE_URL = "https://pdf.viscusmedia.com/compress"
-CALLBACK_URL = "http://127.0.0.1:5000/receive"  # callback ke flask ini sendiri
+# Konfigurasi dari environment variables
+COMPRESSOR_API_KEY = os.getenv("COMPRESSOR_API_KEY", "secret123")
+COMPRESS_SERVICE_URL = os.getenv("COMPRESS_SERVICE_URL", "https://pdf.viscusmedia.com/compress")
+CALLBACK_URL = os.getenv("CALLBACK_URL", "http://127.0.0.1:5000/receive")
+FILE_BASE_URL = os.getenv("FILE_BASE_URL", "http://127.0.0.1:5000")
 
 app = Flask(__name__)
-app.secret_key = "secret"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "development-key-123")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
@@ -38,9 +41,8 @@ def index():
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             file.save(filepath)
 
-            # Buat file_url lokal → supaya bisa diakses service kompresor
-            # Dalam real case: file ini harus diupload ke storage publik (S3, dsb)
-            file_url = f"http://127.0.0.1:5000/uploads/{filename}"
+            # Gunakan FILE_BASE_URL dari environment
+            file_url = f"{FILE_BASE_URL}/uploads/{filename}"
 
             # Panggil service kompresor
             payload = {
